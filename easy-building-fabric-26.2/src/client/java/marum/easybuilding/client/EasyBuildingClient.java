@@ -134,10 +134,25 @@ public class EasyBuildingClient implements ClientModInitializer {
             if (client.player == null) return;
 
 			BlockPos projectedBlock = getProjectedBlock();
+			if (projectedBlock == null) return;
 			boolean inRange = isInRange(projectedBlock);
-			final int red = 255;
-			final int green = inRange ? 255 : 0;
-			final int blue = inRange ? 255 : 0;
+			boolean replaceable = client.level.getBlockState(projectedBlock).canBeReplaced();
+			final int red;
+			final int green;
+			final int blue;
+			if (!replaceable) {
+				red = 255;
+				green = 140;
+				blue = 0;
+			} else if (!inRange) {
+				red = 255;
+				green = 0;
+				blue = 0;
+			} else {
+				red = 255;
+				green = 255;
+				blue = 255;
+			}
 			Vec3 planePoint = new Vec3(
 				projectedBlock.getX(),
 				projectedBlock.getY(),
@@ -149,6 +164,10 @@ public class EasyBuildingClient implements ClientModInitializer {
 
             float tickDelta = client.getDeltaTracker().getGameTimeDeltaPartialTick(false);
 
+            final Direction face = PlaneMode.selectedFace;
+            final Vec3 cameraPos = client.getCameraEntity().getEyePosition(tickDelta);
+            if (face == null) return;
+
 			context.submitNodeCollector().submitCustomGeometry(
 				context.poseStack(),
 				RenderTypes.LINES_TRANSLUCENT,
@@ -157,9 +176,9 @@ public class EasyBuildingClient implements ClientModInitializer {
 					drawFaceSquare(
 						consumer,
 						pose.pose(),
-						client.getCameraEntity().getEyePosition(tickDelta),
+						cameraPos,
 						modifiedPlanePoint,
-						PlaneMode.selectedFace,
+						face,
 						red, green, blue);
 				});
         });
@@ -214,12 +233,12 @@ public class EasyBuildingClient implements ClientModInitializer {
 		consumer.addVertex(positionMatrix, x1, y1, z1)
 				.setColor(red, green, blue, alpha)
 				.setNormal(dx, dy, dz)
-                .setLineWidth(2f);
+                .setLineWidth(4f);
 
 		consumer.addVertex(positionMatrix, x2, y2, z2)
 				.setColor(red, green, blue, alpha)
 				.setNormal(dx, dy, dz)
-                .setLineWidth(2f);;
+                .setLineWidth(4f);;
 	}
 
     private static void drawFaceSquare(
@@ -237,6 +256,8 @@ public class EasyBuildingClient implements ClientModInitializer {
 		double bz = blockPos.z();
 
 		double offset = 0.001;
+
+		if (face == null) return;
 
 		Vec3 corner;
 		Vec3 i;
