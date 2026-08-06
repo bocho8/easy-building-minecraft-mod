@@ -1,7 +1,7 @@
 {
 	"schemaVersion": 1,
 	"id": "easy-building",
-	"version": "fabric-26.2-v1",
+	"version": "26.2.0+fabric",
 	"name": "easy-building",
 	"description": "This is an example description! Tell everyone what your mod is about!",
 	"authors": [
