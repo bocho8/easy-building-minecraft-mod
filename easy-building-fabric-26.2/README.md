@@ -1,9 +1,17 @@
-# easy-building
+# easy-building (26.2)
 
-## Setup
+This is a modified version of the original [easy-building-minecraft-mod](https://github.com/marianolarre/easy-building-minecraft-mod), ported and adapted for Minecraft 26.2 (Fabric).
 
-For setup instructions, please see the [Fabric Documentation page](https://docs.fabricmc.net/develop/getting-started/creating-a-project#setting-up) related to the IDE that you are using.
+## Changes
+
+- Ported to Minecraft 26.2 and Fabric API `0.156.0+26.2`.
+- Updated rendering to the new 26.2 feature rendering API (`submitCustomGeometry`).
+- Thicker preview lines (more visible).
+- The preview square changes color depending on the target position:
+  - **White**: position is free and in range.
+  - **Red**: out of range.
+  - **Orange**: a block is already there and cannot be replaced.
 
 ## License
 
-This template is available under the CC0 license. Feel free to learn from it and incorporate it in your own projects.
+The original mod is released under the MIT License.
