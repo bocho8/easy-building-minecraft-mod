@@ -1,0 +1,37 @@
+{
+	"schemaVersion": 1,
+	"id": "easy-building",
+	"version": "${version}",
+	"name": "Easy Building",
+	"description": "Quickly build walls and floors without mistakes, completely client side.",
+	"authors": [
+		"Marum"
+	],
+	"contact": {
+		"homepage": "https://modrinth.com/mod/easy-building",
+		"sources": "https://github.com/marianolarre/easy-building-minecraft-mod"
+	},
+	"license": "MIT",
+	"icon": "assets/easy-building/icon.png",
+	"environment": "client",
+	"entrypoints": {
+		"client": [
+			"marum.easybuilding.client.EasyBuildingClient"
+		]
+	},
+	"mixins": [
+		{
+			"config": "easy-building.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.19.5",
+		"minecraft": "~26.3",
+		"java": ">=25",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"fix_easybuilding": "*"
+	}
+}
