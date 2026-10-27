@@ -19,5 +19,6 @@ public class PlaneMode {
         selectedBlockPos = null;
         selectedFace = null;
         selectedBlockState = null;
+        verticalOffset = 0f;
     }
 }

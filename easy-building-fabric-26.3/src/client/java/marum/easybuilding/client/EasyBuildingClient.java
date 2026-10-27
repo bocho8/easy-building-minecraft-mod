@@ -59,6 +59,20 @@ public class EasyBuildingClient implements ClientModInitializer {
             ));
         
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            // Leaving a world nulls player/level but not the plane mode state. Drop the
+            // stale selection instead of dereferencing nulls, and start clean next world.
+            if (client.level == null || client.player == null) {
+                while (showGridKey.consumeClick()) {
+                    // Ignore presses made outside a world.
+                }
+                if (PlaneMode.active) {
+                    PlaneMode.clear();
+                }
+                lastPlacedPos = null;
+                currentProjectedBlock = null;
+                return;
+            }
+
             while (showGridKey.consumeClick()) {
                 if (PlaneMode.active) {
 					// Turn off
@@ -126,11 +140,9 @@ public class EasyBuildingClient implements ClientModInitializer {
         });
 
         LevelRenderEvents.AFTER_TRANSLUCENT_FEATURES.register(context -> {
-            if (!PlaneMode.active) {
+            if (!PlaneMode.active || client.level == null || client.player == null) {
 				return;
 			}
-
-            if (client.player == null) return;
 
 			BlockPos projectedBlock = getProjectedBlock();
 			if (projectedBlock == null) return;
@@ -377,7 +389,11 @@ public class EasyBuildingClient implements ClientModInitializer {
 
     // Project view vector onto selected plane
 	public static BlockPos getProjectedBlock() {
-		if (!PlaneMode.active) {
+		if (!PlaneMode.active
+				|| PlaneMode.selectedBlockPos == null
+				|| PlaneMode.selectedFace == null
+				|| client.player == null
+				|| client.level == null) {
 			return null;
 		}
 
@@ -432,7 +448,7 @@ public class EasyBuildingClient implements ClientModInitializer {
 
     public static void TryPlaceBlock(BlockPos blockPos) {
 		// Out of range check
-		if (!isInRange(blockPos)) {
+		if (blockPos == null || !isInRange(blockPos)) {
 			return;
 		}
 
@@ -440,7 +456,7 @@ public class EasyBuildingClient implements ClientModInitializer {
 
         LocalPlayer player = Minecraft.getInstance().player;
 
-        if (player == null) return;
+        if (world == null || player == null) return;
 
 		// If there is already something there, dont place
 		if (!world.getBlockState(blockPos).canBeReplaced()) {
@@ -488,13 +504,15 @@ public class EasyBuildingClient implements ClientModInitializer {
 			);
 
 			// If its a slab or stair, retain original placement and offset the position so it only places bottom/top
-			if (PlaneMode.selectedBlockState.getBlock() instanceof SlabBlock) {
+			if (PlaneMode.selectedBlockState != null
+					&& PlaneMode.selectedBlockState.getBlock() instanceof SlabBlock) {
 				double halfOffset = (PlaneMode.selectedBlockState.getValue(SlabBlock.TYPE) == SlabType.TOP)
 				? 0.25 : -0.25;
 
 				hitPos = hitPos.add(new Vec3(0, halfOffset, 0));
 			}
-			if (PlaneMode.selectedBlockState.getBlock() instanceof StairBlock) {
+			if (PlaneMode.selectedBlockState != null
+					&& PlaneMode.selectedBlockState.getBlock() instanceof StairBlock) {
 				double halfOffset = (PlaneMode.selectedBlockState.getValue(StairBlock.HALF) == Half.TOP)
 				? 0.25 : -0.25;
 

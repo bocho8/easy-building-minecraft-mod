@@ -43,9 +43,10 @@ Todo o resto da renderização (`submitCustomGeometry` da feature rendering API)
 
 ## Crash de desconectar
 
-Ao sair de um mundo o cliente fica sem `player`, mas o "plane mode" continua ligado e o mod estoura um
-`NullPointerException` no próximo tick. O mod [`fix_easybuilding`](https://github.com/Mateus-repo/fix-easybuilding)
-resolve isso — instale os dois lado a lado se quiser a correção.
+Sair de um mundo deixava o "plane mode" ligado com `player` nulo, e o tick seguinte estourava um
+`NullPointerException`. O tick agora limpa esse estado quando `player` ou `level` somem, e o modo
+começa desligado no próximo mundo. O [`fix_easybuilding`](https://github.com/Mateus-repo/fix-easybuilding)
+deixou de ser necessário.
 
 ## Licença
 
